@@ -78,7 +78,5 @@ if __name__ == '__main__':
 	rate = rospy.Rate(5)
 
 	while not rospy.is_shutdown():
-
-	    run_tiago()
-
-	    rate.sleep()
+		run_tiago()
+		rate.sleep()

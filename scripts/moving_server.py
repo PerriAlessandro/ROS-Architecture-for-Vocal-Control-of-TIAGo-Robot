@@ -38,13 +38,13 @@ class MoveSpeechServer:
     pub_msg.angular.y = 0
     pub_msg.angular.z = goal.turn
 
-    print(goal.time * rate)
+    print("Duration of the action: "+str(goal.time * rate))
 
     for i in range(0, goal.time * rate):
 
-      print(goal.time * rate)
-      print('time is passing..  ',i)
-      print(goal.time * rate)
+      #print(goal.time * rate)
+      #print('time is passing..  ',i)
+      #print(goal.time * rate)
 
       if self.server.is_preempt_requested():
         rospy.loginfo('%s: Preempted' % self._action_name)
@@ -55,15 +55,10 @@ class MoveSpeechServer:
       #self._feedback.time = i
      
       #self.server.publish_feedback(self._feedback)
-
       pub.publish(pub_msg)
-
-      print('cmd_vel published')
-
       r.sleep()
 
     success = True
-
     self.server.set_succeeded()
 
 
