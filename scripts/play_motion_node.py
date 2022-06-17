@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
 #!/usr/bin/env python2
-import speech_recognition as sr
+ 
+import rospy
 import sys
 import time
-# ROS imports
-import rospy
+from std_msgs.msg import Int32
+from speech_rec.srv import Word , WordRequest
 from actionlib import SimpleActionClient, GoalStatus
 from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
 
 
+
 def wait_for_valid_time(timeout):
-    """Wait for a valid time (non-zero), this is important
-    when using a simulated clock"""
-    # Loop until:
-    # * ros master shutdowns
-    # * control+C is pressed (handled in is_shutdown())
-    # * timeout is achieved
-    # * time is valid
+
     start_time = time.time()
     while not rospy.is_shutdown():
         if not rospy.Time.now().is_zero():
@@ -60,27 +56,27 @@ def sendgoal(text):
     else:
         rospy.logwarn("Action failed with state: " + str(get_status_string(state)))
 
-    
+def play_callback(msg):
+	
+	if msg.data == 1:
+		sendgoal('wave')
 
-rospy.init_node("speechrec")
 
-recognizer_instance = sr.Recognizer() # Crea una istanza del recognizer
-text=''
-while text != 'exit':
-    with sr.Microphone() as source:
-        recognizer_instance.adjust_for_ambient_noise(source)
-        print("I'm listening.. just talk!")
-        audio = recognizer_instance.listen(source)
-        print("Ok! I'm processing the message!")
-    try:
-        text = recognizer_instance.recognize_google(audio, language="en-EN")
-        print("You said: \n", text)
-        if (text == 'wave'):
-            sendgoal(text)
-    except Exception as e:
-        print(e)
+def main():
+	rospy.init_node("play_motion_node")
 
+	rate = rospy.Rate(5)
+
+	sub = rospy.Subscriber('/playmotion', Int32, play_callback)
+
+	while not rospy.is_shutdown():
+		rate.sleep()	
+
+if __name__ == '__main__':
+	main()
 
 
 
-print("Hope to (not) see you again!")
+
+	
+

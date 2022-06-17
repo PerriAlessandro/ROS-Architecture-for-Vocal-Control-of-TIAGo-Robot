@@ -1,3 +1,4 @@
 string word
 ---
-int32 val
+int32 mode
+int32 kind

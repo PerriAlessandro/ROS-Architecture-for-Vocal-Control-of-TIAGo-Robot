@@ -10,12 +10,25 @@ import rospy
  
 
 def server_callback(req):
-	if (req == 'wave'):
-		resp = 5
-		return WordResponse(resp)
+
+	print('detected: ', req.word)
+	if 'hello' in req.word:
+		mode = 1
+		kind = 1
+		
+	elif 'go' in req.word:
+		mode = 2
+		kind = 1
+
+	elif 'stop' in req.word:
+		mode = 2
+		kind = 2
+		
 	else:
-		resp = 0
-		return WordResponse(resp)
+		mode = -1
+		kind = -1
+
+	return WordResponse(mode,kind)
 
 def word_server():
 	rospy.init_node('detect_word')
