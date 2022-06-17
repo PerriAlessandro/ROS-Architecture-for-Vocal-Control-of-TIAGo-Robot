@@ -10,6 +10,7 @@ project(speech_rec)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   message_generation
+  actionlib_msgs
   std_msgs
 )
 
@@ -60,16 +61,17 @@ add_service_files(
 )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
+ add_action_files(
+   FILES
+   MoveSpeech.action
 #   Action2.action
-# )
+ )
 
 ## Generate added messages and services with any dependencies listed hereà
 generate_messages(
  DEPENDENCIES
  std_msgs  # Or other packages containing msgs
+ actionlib_msgs
  )
 
 ################################################
@@ -104,7 +106,8 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES speech_rec
-#  CATKIN_DEPENDS rospy
+  CATKIN_DEPENDS rospy actionlib_msgs std_msgs message_runtime
+  
 #  DEPENDS system_lib
 )
 

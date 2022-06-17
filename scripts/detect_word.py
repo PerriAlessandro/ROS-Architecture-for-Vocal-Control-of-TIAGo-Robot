@@ -23,6 +23,10 @@ def server_callback(req):
 	elif 'stop' in req.word:
 		mode = 2
 		kind = 2
+
+	elif 'left' in req.word:
+		mode = 2
+		kind = 3
 		
 	else:
 		mode = -1

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+	<node pkg="speech_rec" type="UI.py" name="UI" required="true" />
+
+	<node pkg="speech_rec" type="detect_word.py" name="detect_word" required="true"  />
+
+	<node pkg="speech_rec" type="moving_control.py" name="moving_control" required="true" />
+
+    <node pkg="speech_rec" type="moving_server.py" name="moving_server" required="true" />
+
+    <node pkg="speech_rec" type="play_motion_node.py" name="play_motion" required="true" />
+
+</launch>

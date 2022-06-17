@@ -7,7 +7,6 @@ import rospy
 import sys
 import time
 from std_msgs.msg import Int32
-from geometry_msgs.msg import Twist
 from speech_rec.srv import Word , WordRequest
 from actionlib import SimpleActionClient, GoalStatus
 from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
@@ -63,45 +62,11 @@ def run_tiago():
 	else:
 		print("Wrong Modality")
 
-	
-	
-	#if word_client(command) == 1:
-	#	sendgoal('wave')
-
-	#elif word_client(command) == 2:
-	#	pub_msg = Twist()
-
-	#	pub_msg.linear.x = 2
-	#	pub_msg.linear.y = 0
-	#	pub_msg.linear.z = 0
-
-	#	pub_msg.angular.x = 0
-	#	pub_msg.angular.y = 0
-	#	pub_msg.angular.z = 0
-
-
-	#	pub.publish(pub_msg)
-
-	#elif word_client(command) == 3:
-	#	pub_msg = Twist()
-
-	#	pub_msg.linear.x = 0
-	#	pub_msg.linear.y = 0
-	#	pub_msg.linear.z = 0
-
-	#	pub_msg.angular.x = 0
-	#	pub_msg.angular.y = 0
-	#	pub_msg.angular.z = 0
-		
-	#	pub.publish(pub_msg)
-
-	#	rospy.spin()
 
 if __name__ == '__main__':
 
 
 	rospy.init_node("UI")
-	pub = rospy.Publisher('/mobile_base_controller/cmd_vel', Twist, queue_size=10)
 
 	listener = sr.Recognizer()
 
