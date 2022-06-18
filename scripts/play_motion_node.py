@@ -60,8 +60,28 @@ def play_callback(msg):
 	
 	if msg.data == 1:
 		sendgoal('wave')
-
-
+	if msg.data == 2:
+		sendgoal('unfold_arm')
+	if msg.data == 3:
+		sendgoal('reach_max')
+	if msg.data == 4:
+		sendgoal('reach_floor')
+	if msg.data == 5:
+		sendgoal('shake_hands')
+	if msg.data == 6:
+		sendgoal('offer')
+	if msg.data == 7:
+		sendgoal('inspect_surroundings')
+	if msg.data == 8:
+		sendgoal('head_tour')
+	if msg.data == 9:
+		sendgoal('close')
+	if msg.data == 10:
+		sendgoal('close_half')
+	if msg.data == 11:
+		sendgoal('do_weights')
+	if msg.data == 12:
+		sendgoal('home')
 def main():
 	rospy.init_node("play_motion_node")
 

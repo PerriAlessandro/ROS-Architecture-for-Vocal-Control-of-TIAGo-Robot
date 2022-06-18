@@ -12,10 +12,56 @@ import rospy
 def server_callback(req):
 
 	print('detected: ', req.word)
+	##MODE 1 - PLAY_MOTION
 	if 'hello' in req.word:
 		mode = 1
 		kind = 1
-	
+	if 'unfold' in req.word:
+		mode = 1
+		kind = 2
+	if 'maximum' in req.word:
+		mode = 1
+		kind = 3
+	if 'floor' in req.word:
+		mode = 1
+		kind = 4
+	if 'shake' in req.word:
+		mode = 1
+		kind = 5
+	if 'offer' in req.word:
+		mode = 1
+		kind = 6
+	if 'surroundings' in req.word:
+		mode = 1
+		kind = 7
+	if 'tour' in req.word:
+		mode = 1
+		kind = 8
+	if 'close' in req.word:
+		mode = 1
+		kind = 9
+	if 'half' in req.word:
+		mode = 1
+		kind = 10
+	if 'gym' in req.word:
+		mode = 1
+		kind = 11
+	if 'home' in req.word:
+		mode = 1
+		kind = 12
+
+	##MODE 2
+	#speed settings 
+	elif 'accelerate' in req.word:
+		mode = 2
+		kind = 6
+	elif 'decelerate' in req.word:
+		mode = 2
+		kind = 7
+	#reset velocity to 1.0
+	elif 'reset' in req.word:
+		mode = 2
+		kind = 8
 	elif 'go' in req.word:
 		mode = 2
 		kind = 1
