@@ -56,9 +56,9 @@ def run_tiago():
 	elif x.mode == 2:
 		msg = x.kind
 		pub2.publish(msg)
-	#elif x.mode == 3:
-		#msg = x.kind
-		#pub3.publish(msg)
+	elif x.mode == 3:
+		msg = x.kind
+		pub3.publish(msg)
 	else:
 		print("Wrong Modality")
 
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
 	pub1 = rospy.Publisher('/playmotion', Int32, queue_size=10)
 	pub2 = rospy.Publisher('/moving', Int32, queue_size=10)
-	
+	pub3 = rospy.Publisher('/arm_moving', Int32, queue_size=10)
 
 
 	rate = rospy.Rate(5)

@@ -10,5 +10,7 @@
     <node pkg="speech_rec" type="moving_server.py" name="moving_server" required="true" />
 
     <node pkg="speech_rec" type="play_motion_node.py" name="play_motion" required="true" />
+    <node pkg="speech_rec" type="arm_traj_control" name="arm_traj_control" required="true" />
+
 
 </launch>

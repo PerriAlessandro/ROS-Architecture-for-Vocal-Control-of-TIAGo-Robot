@@ -44,13 +44,13 @@ def motion_callback(msg):
     if msg.data == 4:
         print("GO STRAIGHT-LEFT")
         goal.velocity = vel
-        goal.turn = 0.785
+        goal.turn = -0.785
         goal.time = 2
         to_send=True
     if msg.data == 5:
         print("GO STRAIGHT-RIGHT")
         goal.velocity = vel
-        goal.turn = -0.785
+        goal.turn = +0.785
         goal.time = 2
         to_send=True
     if msg.data == 6:

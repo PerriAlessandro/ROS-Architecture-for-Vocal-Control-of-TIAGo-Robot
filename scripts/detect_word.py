@@ -16,37 +16,37 @@ def server_callback(req):
 	if 'hello' in req.word:
 		mode = 1
 		kind = 1
-	if 'unfold' in req.word:
+	elif 'unfold' in req.word:
 		mode = 1
 		kind = 2
-	if 'maximum' in req.word:
+	elif 'maximum' in req.word:
 		mode = 1
 		kind = 3
-	if 'floor' in req.word:
+	elif 'floor' in req.word:
 		mode = 1
 		kind = 4
-	if 'shake' in req.word:
+	elif 'shake' in req.word:
 		mode = 1
 		kind = 5
-	if 'offer' in req.word:
+	elif 'offer' in req.word:
 		mode = 1
 		kind = 6
-	if 'surroundings' in req.word:
+	elif 'surroundings' in req.word:
 		mode = 1
 		kind = 7
-	if 'tour' in req.word:
+	elif 'tour' in req.word:
 		mode = 1
 		kind = 8
-	if 'close' in req.word:
+	elif 'close' in req.word:
 		mode = 1
 		kind = 9
-	if 'half' in req.word:
+	elif 'half' in req.word:
 		mode = 1
 		kind = 10
-	if 'gym' in req.word:
+	elif 'gym' in req.word:
 		mode = 1
 		kind = 11
-	if 'home' in req.word:
+	elif 'home' in req.word:
 		mode = 1
 		kind = 12
 
@@ -80,7 +80,14 @@ def server_callback(req):
 	elif 'stop' in req.word:
 		mode = 2
 		kind = -1
-		
+
+	#MODE 3 - ARM MOTION
+	elif 'arm' in req.word:
+		mode = 3
+		kind =1
+
+
+
 	else:
 		mode = -1
 		kind = -1
