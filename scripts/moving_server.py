@@ -52,9 +52,9 @@ class MoveSpeechServer:
         success = False
         break
 
-      #self._feedback.time = i
+      self._feedback.time = i
      
-      #self.server.publish_feedback(self._feedback)
+      self.server.publish_feedback(self._feedback)
       pub.publish(pub_msg)
       r.sleep()
 

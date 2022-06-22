@@ -83,7 +83,7 @@ def play_callback(msg):
 	if msg.data == 12:
 		sendgoal('home')
 def main():
-	rospy.init_node("play_motion_node")
+	rospy.init_node("animation_node")
 
 	rate = rospy.Rate(5)
 

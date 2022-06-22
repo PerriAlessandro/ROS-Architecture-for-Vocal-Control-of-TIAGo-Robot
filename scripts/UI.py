@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 #!/usr/bin/env python2
- 
-import tkinter 
-import tkinter.messagebox
 
 import speech_recognition as sr
 import rospy
 import sys
 import time
+import os
 from std_msgs.msg import Int32
 from speech_rec.srv import Word , WordRequest
 from actionlib import SimpleActionClient, GoalStatus
@@ -70,7 +68,7 @@ def run_tiago():
 
 
 if __name__ == '__main__':
-
+	os.system('cls||clear')
 	rospy.init_node("UI")
 	rate = rospy.Rate(5)
 

@@ -81,6 +81,12 @@ def go(word):
     kind = 1
     return mode, kind
 
+def back(word):
+    print('G0ING BACK')
+    mode = 2
+    kind = 10
+    return mode, kind
+
 def accelerate(word):
     print('accelerate')
     mode = 2
@@ -164,6 +170,8 @@ switcher = {
     'home': home,
 
     'go': go,
+
+    'back': back,
 
     'left' : left,
 
