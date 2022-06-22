@@ -5,7 +5,7 @@
 
 	<node pkg="speech_rec" type="detect_word.py" name="detect_word" required="true"  />
 
-	<node pkg="speech_rec" type="moving_control.py" name="moving_control" required="true" />
+	<node pkg="speech_rec" type="moving_control.py" name="moving_control" required="true" launch-prefix="xterm -e" />
 
     <node pkg="speech_rec" type="moving_server.py" name="moving_server" required="true" />
 

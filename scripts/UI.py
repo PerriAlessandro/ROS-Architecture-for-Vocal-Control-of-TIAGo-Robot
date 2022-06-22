@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #!/usr/bin/env python2
  
+import tkinter 
+import tkinter.messagebox
 
 import speech_recognition as sr
 import rospy
@@ -10,6 +12,8 @@ from std_msgs.msg import Int32
 from speech_rec.srv import Word , WordRequest
 from actionlib import SimpleActionClient, GoalStatus
 from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
+
+clicked = False
 
 def word_client(word):
 	
@@ -62,21 +66,26 @@ def run_tiago():
 	else:
 		print("Wrong Modality")
 
+	
+
 
 if __name__ == '__main__':
 
-
 	rospy.init_node("UI")
+	rate = rospy.Rate(5)
+
 
 	listener = sr.Recognizer()
 
 	pub1 = rospy.Publisher('/playmotion', Int32, queue_size=10)
 	pub2 = rospy.Publisher('/moving', Int32, queue_size=10)
 	pub3 = rospy.Publisher('/arm_moving', Int32, queue_size=10)
-
-
-	rate = rospy.Rate(5)
-
+	
 	while not rospy.is_shutdown():
+		#print("inside while")
+		print ("inside if")
 		run_tiago()
 		rate.sleep()
+	
+
+	
