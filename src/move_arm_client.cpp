@@ -24,7 +24,11 @@ typedef boost::shared_ptr< arm_control_client>  arm_control_client_Ptr;
 // Create an arm controller action client to move the TIAGo's arm
 arm_control_client_Ptr ArmClient;
 // set of joint positions corresponding to a certain motion
-double joint_pos_1[1][7] = {0.2,0.0,-1.5,1.94,-1.57,-0.5,0.0};
+// double joint_pos_1[1][7] = {0.2,0.0,-1.5,1.94,-1.57,-0.5,0.0};
+double joint_pos_up[1][7] = {0.0,1.0,0.0,0.0,0.0,0.0,0.0};
+double joint_pos_down[1][7] = {0.0,-1.0,0.0,0.0,0.0,0.0,0.0};
+double joint_pos_short_fa[1][7] = {0.0,0.0,0.0,1.0,0.0,0.0,0.0};
+
 // Create a ROS action client to move TIAGo's arm
 void createArmClient(arm_control_client_Ptr& actionClient)
 {
@@ -50,7 +54,7 @@ void createArmClient(arm_control_client_Ptr& actionClient)
 // Generates a simple trajectory with two waypoints to move TIAGo's arm 
 void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpos [][7])
 {
-    cout<<"AAAAAAAAAAAAAAAAAAAA"<<endl;
+  
   // The joint names, which apply to all waypoints
   goal.trajectory.joint_names.push_back("arm_1_joint");
   goal.trajectory.joint_names.push_back("arm_2_joint");
@@ -79,12 +83,7 @@ for(int j=0;j<n_waypoints;j++)
 if(j==(n_waypoints-1))  goal.trajectory.points[j].velocities[i+1] = 0.0; else  goal.trajectory.points[j].velocities[i+1] = 1.0; 
     }
 
-//       for (int k = 0; k < 7; ++k)
-//   {
-//     if(j==(n_waypoints-1))  goal.trajectory.points[j].velocities[k] = 0.0; else  goal.trajectory.points[j].velocities[k] = 1.0;
-
-//   }
-cout<<endl;
+  cout<<endl;
   goal.trajectory.points[j].time_from_start = ros::Duration(duration);
   duration=duration+2.0;
 
@@ -100,12 +99,17 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
       cout<<"msg data: "<<msg->data<<endl;
 
     control_msgs::FollowJointTrajectoryGoal arm_goal;
-    if (msg->data == 1){
-         // Generates the goal for the TIAGo's arm
-         cout<<"into the if"<<endl;
-        waypoints_arm_goal(arm_goal,joint_pos_1);
-
+    // Generates the goal for the TIAGo's arm
+    if (msg->data == 1){ //UP
+        waypoints_arm_goal(arm_goal,joint_pos_up);
     }
+    if (msg->data == 2){ //DOWN
+        waypoints_arm_goal(arm_goal,joint_pos_down);
+    }
+    if (msg->data == 3){ //SHORTEN FOREARM
+        waypoints_arm_goal(arm_goal,joint_pos_short_fa);
+    }
+
 
 
   // Sends the command to start the given trajectory 1s from now

@@ -81,12 +81,6 @@ def go(word):
     kind = 1
     return mode, kind
 
-def back(word):
-    print('G0ING BACK')
-    mode = 2
-    kind = 10
-    return mode, kind
-
 def accelerate(word):
     print('accelerate')
     mode = 2
@@ -123,6 +117,13 @@ def right(word):
             kind = 3
     return mode, kind
 
+
+def backward(word):
+    print('BACKWARDS')
+    mode = 2
+    kind = 9
+    return mode, kind
+
 def stop(word):
     print('STOP')
     mode = 2
@@ -131,10 +132,23 @@ def stop(word):
 
 #### Mode 3 ####
 def arm(word):
-    print('Arm')
-    mode = 3
-    kind = 1
+    print('Arm: '+word)
+
+    mode=3
+    if 'up' in word:
+            kind = 1
+    elif 'down' in word:
+            kind = 2
+    else:
+        kind=-1    
     return mode, kind
+
+def forearm(word):
+    print('SHORTEN FOREARM')
+    mode = 3
+    kind = 3
+    return mode, kind
+
 
 #### Default ####
 def default(word):
@@ -171,11 +185,11 @@ switcher = {
 
     'go': go,
 
-    'back': back,
-
     'left' : left,
 
     'right': right,
+
+    'backward': backward,
 
     'accelerate': accelerate,
 
@@ -184,6 +198,8 @@ switcher = {
     'reset': reset,
 
     'arm': arm,
+
+    'forearm': forearm,
 
     'stop': stop
 }
