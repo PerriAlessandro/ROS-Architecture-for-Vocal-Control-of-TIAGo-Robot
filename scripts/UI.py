@@ -46,18 +46,18 @@ def word_client(word):
 
 def take_command():
 
-	'''
-	Function to get the vocal input from the microphone, thanks to the Uberi speech recognition 
-	library, the Google-Recognition service is used to process the input from vocal to a string.
+    '''
+    Function to get the vocal input from the microphone, thanks to the Uberi speech recognition 
+    library, the Google-Recognition service is used to process the input from vocal to a string.
 
-	Arguments:
-		* None
-	Returns:
-		* command: the whole vocal input as a string 
-	'''
+    Arguments:
+       * None
+    Returns:
+       * command: the whole vocal input as a string 
+    '''
 
     try:
-    	# Using the Computer microphone a input source 
+        # Using the Computer microphone a input source 
         with sr.Microphone() as source:
             print('listening...')
             # Adjusting the external ambient noise 
@@ -73,7 +73,7 @@ def take_command():
             # returning the vocal command only if the key-word is in the string line
             # vocal input 
             if 'alexa' in command:
-            	# erasing the key-word from the string 
+                # erasing the key-word from the string 
                 command = command.replace('alexa', '')
                 return command
     except Exception as e:

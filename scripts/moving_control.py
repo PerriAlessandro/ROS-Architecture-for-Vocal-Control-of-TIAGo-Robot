@@ -36,7 +36,10 @@ def callback_feedback(feedback):
     This function will stop any goal running if the stop_motion variable turns True.
 
     Arguments:
-        * feedback (int): int value retrieved from the server.
+    * feedback (int): int value retrieved from the server.
+
+    Returns:
+    * None 
 
     '''
     global stop_motion
@@ -59,8 +62,11 @@ def callback_laser(laser):
     If the robot will get too close to a certain object in space, the function will stop the robot from moving by cancelling all the curent active goals.
 
     Arguments: 
-        * laser(LaserScan): laser scan message containing all the information abour intensity 
+     * laser(LaserScan): laser scan message containing all the information abour intensity 
     range and other features of the TiaGo's laser-array. 
+
+    Returns:
+     * None 
     '''
     global can_go_left
     global can_go_right
@@ -123,7 +129,10 @@ def motion_callback(msg):
     a certain direction the TiaGo robot.
 
     Arguments: 
-        * msg (int32): int value stored in the data field related to the certain goal asked to be achived.
+     * msg (int32): int value stored in the data field related to the certain goal asked to be achived.
+
+    Returns:
+     * None 
 
     '''
     global can_go_left

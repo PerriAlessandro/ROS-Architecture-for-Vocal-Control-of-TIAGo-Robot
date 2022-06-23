@@ -14,11 +14,14 @@ def server_callback(req):
 	This callback function retrieves the request (req) from the client UI.py.
 	The response will be set as a couple of numbers indicating the action the robot will execute.
 	The two numbers identify:
-		* mode (int32): The type of action te robot will execute.
-		* kind (int32): The specific goal the robot will complete the specific movement.
+	 * mode (int32): The type of action te robot will execute.
+	 * kind (int32): The specific goal the robot will complete the specific movement.
 
 	Arguments: 
-		* req (string): request from the UI.py client
+	 * req (string): request from the UI.py client
+
+	Returns:
+	 * None 
 
 	'''
 
@@ -34,6 +37,13 @@ def server_callback(req):
 def word_server():
 	'''
 	This function will init the ros node and will define the service related to the server_callback function.
+	
+	Arguments:
+	 * None
+
+	Returns:
+	 * None
+
 	'''
 
 	rospy.init_node('detect_word')
