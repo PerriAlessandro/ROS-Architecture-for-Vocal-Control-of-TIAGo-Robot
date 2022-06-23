@@ -143,10 +143,15 @@ def arm(word):
         kind=-1    
     return mode, kind
 
-def forearm(word):
-    print('SHORTEN FOREARM')
-    mode = 3
-    kind = 3
+def elbow(word):
+
+    mode=3
+    if 'up' in word:
+            kind = 3
+    elif 'down' in word:
+            kind = 4
+    else:
+        kind=-1    
     return mode, kind
 
 
@@ -199,7 +204,7 @@ switcher = {
 
     'arm': arm,
 
-    'forearm': forearm,
+    'elbow': elbow,
 
     'stop': stop
 }
