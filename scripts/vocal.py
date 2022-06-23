@@ -1,6 +1,13 @@
 
 ###### Vocal Commands ########
 
+'''
+
+A special function is associated with each voice command that sets 
+two integers (mode, type) recognizable by the other nodes.
+
+'''
+
 #### Mode 1 ####
 def hello(word):
     print('Hello from TIAGo')
@@ -162,6 +169,8 @@ def default(word):
     kind = -1
     return mode, kind
 
+# Dictionary that contain all the possible vocal commands
+
 switcher = {
 
     'hello': hello,
@@ -211,12 +220,21 @@ switcher = {
 
 
 def word(word):
+
+    """
+
+    Function to call the proper action according to the vocal input
+
+    """
     command=""
+    # Browsing in the dictionary to know if the vocal input is right 
+    # or not 
+
     for key in switcher:
         if key in word:
             command=key
 
-
+    # getting the riht function to call from the dictionary 
     function = switcher.get(command,default)
     return function(word)
 
