@@ -15,27 +15,37 @@
 #include <std_msgs/Int32.h>
 using namespace std;
 
-
-// Our Action interface type for moving TIAGo's head, provided as a typedef for convenience
+// Our Action interface type for moving TIAGo's arm, provided as a typedef for convenience
 typedef actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> arm_control_client;
 typedef boost::shared_ptr< arm_control_client>  arm_control_client_Ptr;
-
 
 // Create an arm controller action client to move the TIAGo's arm
 arm_control_client_Ptr ArmClient;
 
+//constant value representing the increment of a certain joint
 const double DELTA_SHOULDER=0.8;
 const double DELTA_ELBOW=0.8;
-
+//array containing the current joint position
 double current_joint_pos[1][7] ={0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-
+//elementary steps to be added to the current joint configuration
 double delta_q_shoulder[1][7] = {0.0,DELTA_SHOULDER,0.0,0.0,0.0,0.0,0.0};
 double delta_q_elbow[1][7] = {0.0,0.0,0.0,DELTA_ELBOW,0.0,0.0,0.0};
 
 
 
 void array_sum(double j_add[][7],int rows, int cols,bool add){
+    /*
+    Function to make the scalar sum between "j_add" array and the one representing the current joint configuration
+
+    Arguments: 
+     * j_add: rowsxcols array which has to be scalarly added to the current joint configuration
+     * rows: number of rows
+     * cols: number of columns
+     * add:  if true, returns the sum. If false, returns the difference
     
+    Returns:
+     * None
+    */
     cout<< "Current joints position: "<<endl;
     for (int i=0;i<rows;i++)
     {
@@ -52,9 +62,17 @@ void array_sum(double j_add[][7],int rows, int cols,bool add){
 }
 
 
-// Create a ROS action client to move TIAGo's arm
-void createArmClient(arm_control_client_Ptr& actionClient)
-{
+
+void createArmClient(arm_control_client_Ptr& actionClient){
+  /*
+  Function to create a ROS action client to move TIAGos arm
+
+  Arguments: 
+    * actionClient: a shared pointer to arm_control_client, which uses messages of type FollowJointTrajectoryAction
+  
+  Returns:
+    * None
+  */
   ROS_INFO("Creating action client to arm controller ...");
 
   actionClient.reset( new arm_control_client("/arm_controller/follow_joint_trajectory") );
@@ -74,51 +92,56 @@ void createArmClient(arm_control_client_Ptr& actionClient)
 }
 
 
-// Generates a simple trajectory with two waypoints to move TIAGo's arm 
-void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpos [][7])
-{
+void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpos [][7]){
+  /*
+  Function to generate a trajectory with a given number of waypoints to move TIAGos arm 
+
+  Arguments: 
+   * goal: reference to FollowJointTrajectoryGoal goal message
+   * jpos: bidimensional array containing the joint position configuration (columns) for each waypoint (rows)
+
+  Returns:
+    * None
+  */
   
  int n_waypoints=sizeof(jpos)/sizeof(jpos[0])+1;
  int n_joints=sizeof(jpos[0])/sizeof(jpos[0][0]);
  cout<<"wp: "<<n_waypoints<<endl;
  cout<<"joints: "<<n_joints<<endl;
 
-  // // The joint names, which apply to all waypoints
-  // goal.trajectory.joint_names.push_back("arm_1_joint");
-  // goal.trajectory.joint_names.push_back("arm_2_joint");
-  // goal.trajectory.joint_names.push_back("arm_3_joint");
-  // goal.trajectory.joint_names.push_back("arm_4_joint");
-  // goal.trajectory.joint_names.push_back("arm_5_joint");
-  // goal.trajectory.joint_names.push_back("arm_6_joint");
-  // goal.trajectory.joint_names.push_back("arm_7_joint");
+  // The joint names, which apply to all waypoints
   for(int i=0; i < n_joints ; i++){
     goal.trajectory.joint_names.push_back("arm_"+to_string(i+1)+"_joint");
   }
 
-  // Two waypoints in this goal trajectory
-  goal.trajectory.points.resize(n_waypoints);
+// resizing so that each row corresponds to a waypoint in this goal trajectory
+goal.trajectory.points.resize(n_waypoints);
 
+// duration for each waypoint
 double duration=2.0;
 for(int j=0;j<n_waypoints;j++)
 { 
-
+    //resizing for positions and velocities
     goal.trajectory.points[j].positions.resize(n_joints);
     goal.trajectory.points[j].velocities.resize(n_joints);
+    //the goal position configuration is set for each joint
     for(int i=0;i<n_joints;i++)
     {
       goal.trajectory.points[j].positions[i] = jpos[j][i];
       cout<<"joint"<<i<<": "<<goal.trajectory.points[j].positions[i]<<endl;
-  for (int k = 0; k < 7; ++k)
-  {
-    if(j==(n_waypoints-1))
-      goal.trajectory.points[j].velocities[k] = 0.0;
-    else
-      goal.trajectory.points[j].velocities[k] = 0.8;
-  }
+      for (int k = 0; k < 7; ++k)
+      {
+        if(j==(n_waypoints-1))
+          //we want that the arm reaches the last waypoint with a 0 velocity
+          goal.trajectory.points[j].velocities[k] = 0.0;
+        else
+          goal.trajectory.points[j].velocities[k] = 0.8;
+      }
 
     }
 
   cout<<endl;
+  //each waypoint should be reached within 2 seconds
   goal.trajectory.points[j].time_from_start = ros::Duration(duration);
   duration=duration+2.0;
 
@@ -128,26 +151,37 @@ for(int j=0;j<n_waypoints;j++)
 
 
 
-//motion callBack 
+
 void motionCallback(const std_msgs::Int32::ConstPtr& msg)
-{   
-      cout<<"msg data: "<<msg->data<<endl;
+{
+  /*
+  Callback function of subscription to /arm_moving topic which 
+  is needed to receive the type of motion to be performed from UI node.
 
-
-
-    control_msgs::FollowJointTrajectoryGoal arm_goal;
-    // Generates the goal for the TIAGo's arm
-    if (msg->data == 1){ // + SHOULDER 
-        if(current_joint_pos[0][1]<DELTA_SHOULDER){
-          array_sum(delta_q_shoulder,1,7,true);
-          waypoints_arm_goal(arm_goal,current_joint_pos);
-        }
+  Arguments: 
+    * msg: value of the callback
+  
+  Returns:
+    * None
+  */
+  
+  cout<<"msg data: "<<msg->data<<endl;
+  control_msgs::FollowJointTrajectoryGoal arm_goal;
+  // Generates the goal for the TIAGo's arm
+  if (msg->data == 1){ // increase SHOULDER position
+    //check if the joint is already at its limits
+    if(current_joint_pos[0][1]<DELTA_SHOULDER){
+        //add the increment to the current configuration 
+        array_sum(delta_q_shoulder,1,7,true);
+        waypoints_arm_goal(arm_goal,current_joint_pos);
+    }
         else
           cout<<"+ SHOULDER NOT ALLOWED"<<endl;
     }
-    if (msg->data == 2){ //- SHOULDER
+    if (msg->data == 2){ // decrease SHOULDER position
+        //check if the joint is already at its limits
         if(current_joint_pos[0][1]>-DELTA_SHOULDER){
-
+        //add the increment to the current configuration 
           array_sum(delta_q_shoulder,1,7,false);
           waypoints_arm_goal(arm_goal,current_joint_pos);
         }
@@ -155,8 +189,9 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
           cout<<"- SHOULDER NOT ALLOWED"<<endl;
     }
     if (msg->data == 3){ // + ELBOW
+        //check if the joint is already at its limits
         if(current_joint_pos[0][3]<DELTA_ELBOW){
-
+        //add the increment to the current configuration 
           array_sum(delta_q_elbow,1,7,true);
           waypoints_arm_goal(arm_goal,current_joint_pos);
         }
@@ -165,7 +200,9 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
     }
 
     if (msg->data == 3){ // -ELBOW
+        //check if the joint is already at its limits
         if(current_joint_pos[0][3]> - DELTA_ELBOW){
+        //add the increment to the current configuration 
           array_sum(delta_q_elbow,1,7,false);
           waypoints_arm_goal(arm_goal,current_joint_pos);
         }
@@ -177,8 +214,9 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
 
   // Sends the command to start the given trajectory 1s from now
   arm_goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
+  // Sends the goal
   ArmClient->sendGoal(arm_goal);
-    cout<<"goal sent!"<<endl;
+  cout<<"goal sent!"<<endl;
   // Wait for trajectory execution
   while(!(ArmClient->getState().isDone()) && ros::ok())
   {
@@ -186,15 +224,13 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
   }
 }
 
-// Entry point
 int main(int argc, char** argv)
 {
   // Init the ROS node
   ros::init(argc, argv, "arm_traj_control");
 
   ROS_INFO("Starting arm_traj_control application ...");
- 
-  // Precondition: Valid clock
+  
   ros::NodeHandle nh;
   if (!ros::Time::waitForValid(ros::WallDuration(10.0))) // NOTE: Important when using simulated clock
   {
@@ -202,7 +238,7 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  
+  // Creates the client for TIAGO's arm motion
   createArmClient(ArmClient);
 
   // Subscription to /arm_moving topic (needed to receive the type of motion to be performed from UI node)

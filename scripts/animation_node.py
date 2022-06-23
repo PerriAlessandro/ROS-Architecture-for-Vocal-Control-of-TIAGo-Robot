@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python2
- 
+
+#Libraries
 import rospy
-import sys
 import time
 from std_msgs.msg import Int32
-from speech_rec.srv import Word , WordRequest
 from actionlib import SimpleActionClient, GoalStatus
 from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
 
 
 
 def wait_for_valid_time(timeout):
+    '''
+    Function to wait for a valid time, exits if it waits for more than timeout seconds
+
+   Arguments: 
+     * timeout: timeout in seconds 
+    
+    Returns:
+     * None
+    '''
 
     start_time = time.time()
     while not rospy.is_shutdown():
@@ -25,9 +32,27 @@ def wait_for_valid_time(timeout):
     exit(0)
 
 def get_status_string(status_code):
+    '''
+    Function to convert the status code into a string
+   	Arguments: 
+     * status_code: status of the action
+    
+    Returns:
+     * String corresponding to the status code
+    '''
     return GoalStatus.to_string(status_code)
 
-def sendgoal(text):
+def start_action(text):
+    '''
+    Function to create a PlayMotionAction client, generate the PlayMotionGoal goal by 
+	passing as 'motion_name' attribute the string 'text', which is passed as argument and trivially contains the
+	name of the motion. 
+   	Arguments: 
+     * text: the name of the motion to be executed
+    
+    Returns:
+     * None 
+    '''
 
     rospy.loginfo("Starting run_motion_python application...")
     wait_for_valid_time(10.0)
@@ -57,36 +82,48 @@ def sendgoal(text):
         rospy.logwarn("Action failed with state: " + str(get_status_string(state)))
 
 def play_callback(msg):
+	'''
+	Callback function of subscription to /playmotion topic. Each integer in msg.data corresponds
+	to a certain motion that has to be executed through an action.
+
+    Arguments: 
+     * msg: the integer corresponding to a certain motion
+    
+    Returns:
+     * None
+	'''
 	
 	if msg.data == 1:
-		sendgoal('wave')
+		start_action('wave')
 	if msg.data == 2:
-		sendgoal('unfold_arm')
+		start_action('unfold_arm')
 	if msg.data == 3:
-		sendgoal('reach_max')
+		start_action('reach_max')
 	if msg.data == 4:
-		sendgoal('reach_floor')
+		start_action('reach_floor')
 	if msg.data == 5:
-		sendgoal('shake_hands')
+		start_action('shake_hands')
 	if msg.data == 6:
-		sendgoal('offer')
+		start_action('offer')
 	if msg.data == 7:
-		sendgoal('inspect_surroundings')
+		start_action('inspect_surroundings')
 	if msg.data == 8:
-		sendgoal('head_tour')
+		start_action('head_tour')
 	if msg.data == 9:
-		sendgoal('close')
+		start_action('close')
 	if msg.data == 10:
-		sendgoal('close_half')
+		start_action('close_half')
 	if msg.data == 11:
-		sendgoal('do_weights')
+		start_action('do_weights')
 	if msg.data == 12:
-		sendgoal('home')
+		start_action('home')
+
+		
 def main():
 	rospy.init_node("animation_node")
 
 	rate = rospy.Rate(5)
-
+	#subscription to /playmotion topic which sends the related integer anytime the user gives a vocal command
 	sub = rospy.Subscriber('/playmotion', Int32, play_callback)
 
 	while not rospy.is_shutdown():
