@@ -54,12 +54,11 @@ def start_action(text):
      * None 
     '''
 
-    rospy.loginfo("Starting run_motion_python application...")
     wait_for_valid_time(10.0)
 
     client = SimpleActionClient('/play_motion', PlayMotionAction)
 
-    rospy.loginfo("Waiting for Action Server...")
+    rospy.logdebug("Waiting for Action Server...")
     client.wait_for_server()
 
     goal = PlayMotionGoal()
@@ -126,12 +125,12 @@ def play_callback(msg):
 
 		
 def main():
-    rospy.init_node("animation_node")
+    rospy.init_node("animation_node",log_level=rospy.DEBUG)
     rospy.loginfo("Node %s initialized",'animation_node')
     rate = rospy.Rate(5)
     #subscription to /playmotion topic which sends the related integer anytime the user gives a vocal command
     sub = rospy.Subscriber('/playmotion', Int32, play_callback)
-    rospy.loginfo("Subscription to the topic %s", '/playmotion')
+    rospy.logdebug("Subscription to the topic %s", '/playmotion')
     while not rospy.is_shutdown():
         rate.sleep()	
 

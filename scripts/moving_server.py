@@ -50,6 +50,7 @@ class MoveSpeechServer:
     # Defining the velocity and rotation of the robot according to 
     # the desired goal
 
+    rospy.logdebug("%s message, initializing...", 'Twist')
     pub_msg = Twist()
     pub_msg.linear.x = goal.velocity
     pub_msg.linear.y = 0
@@ -59,7 +60,8 @@ class MoveSpeechServer:
     pub_msg.angular.y = 0
     pub_msg.angular.z = goal.turn
 
-    print("Duration of the action: "+str(goal.time * rate))
+    rospy.loginfo("Duration of the action: "+str(goal.time * rate))
+    #print("Duration of the action: "+str(goal.time * rate))
 
     # publishing the goal according to the time duration of the 
     # client's request
@@ -79,6 +81,8 @@ class MoveSpeechServer:
       # publishing the feedback
       self.server.publish_feedback(self._feedback)
       # publiching the goal 
+
+      rospy.logdebug("%s message, Sending...", 'pub_msg')
       pub.publish(pub_msg)
       r.sleep()
 
@@ -89,9 +93,14 @@ class MoveSpeechServer:
 if __name__ == '__main__':
 
   # Initializing the Node 
-  rospy.init_node('moving_server')
+  rospy.init_node('moving_server',log_level=rospy.DEBUG)
+  rospy.loginfo("Node %s initialized", 'moving_server')
+  
   # Defining the publisher for the 'cmd_vel' like topic for TIAGo
+  rospy.logdebug("Publishing to the %s custom topic with the motion_callback function", '/mobile_base_controller/cmd_vel')
   pub = rospy.Publisher('/mobile_base_controller/cmd_vel', Twist, queue_size=10)
+
   # initializing the custom server object
+  rospy.logdebug("%s service, initializing server", 'move_spc')
   server = MoveSpeechServer('move_spc')
   

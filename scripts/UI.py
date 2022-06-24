@@ -5,13 +5,9 @@
 #Libraries
 import speech_recognition as sr
 import rospy
-import sys
-import time
 import os
 from std_msgs.msg import Int32
 from speech_rec.srv import Word , WordRequest
-from actionlib import SimpleActionClient, GoalStatus
-from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
 
 def word_client(word):
 
@@ -33,16 +29,19 @@ def word_client(word):
 	try:
 		# creation of the client for the custom action
 		word_srv = rospy.ServiceProxy('text',Word)
+		rospy.logdebug("%s service request", 'text')
 		# sending the request to the server 
 		resp = WordRequest(word)
 		# getting the reponse from the server 
 		result = word_srv(resp)
+		rospy.logdebug("%s service response received: %s" % ('text',result))
 		# returning the server's response
 		return result
 
 	except rospy.ServiceException as e:
 		# printing the proper exception if any
-		print('Service Failed: %s'%e)
+		rospy.logerr("Exception occurred: %s", str(e))
+
 
 def take_command():
 
@@ -67,9 +66,11 @@ def take_command():
             # Using Google API to recognize the vocal input 
             command = listener.recognize_google(audio, language="en-EN")
             print("Ok! I'm processing the message!")
+            rospy.loginfo("Ok! I'm processing the message!")
             # retrieving the in input in lower case string 
             command = command.lower()
             print("You said: \n", command)
+            rospy.loginfo("User said: %s", command)
             # returning the vocal command only if the key-word is in the string line
             # vocal input 
             if 'alexa' in command:
@@ -77,8 +78,9 @@ def take_command():
                 command = command.replace('alexa', '')
                 return command
     except Exception as e:
-    	# printing the exceptions if any
+        # printing the exceptions if any
         print(e)
+        rospy.logerr("Exception occurred: %s", str(e))
     return "I didn't get it"
 
 def run_tiago():
@@ -93,27 +95,30 @@ def run_tiago():
 		* None
 	"""
 
-	# retrieving the vocal cammand
+	# retrieving the vocal command
 	command = take_command()
 	print(command)
+	rospy.loginfo("Vocal command detected: %s", command)
 
 	# getting the server response
 	x = word_client(command)
-	print(x.mode)
-	print(x.kind)
+	rospy.loginfo("Modality: %d, kind of motion: %d" % (x.mode,x.kind))
 
 	# Sending a message to the proper node
 	if x.mode == 1:
 		msg = x.kind
-		pub1.publish(msg)
+		playmotion_pub.publish(msg)
+		rospy.logdebug("Message published on %s topic", '/playmotion')
 	elif x.mode == 2:
 		msg = x.kind
-		pub2.publish(msg)
+		moving_pub.publish(msg)
+		rospy.logdebug("Message published on %s topic", '/moving')
 	elif x.mode == 3:
 		msg = x.kind
-		pub3.publish(msg)
+		arm_moving.publish(msg)
+		rospy.logdebug("Message published on %s topic", '/arm_moving')
 	else:
-		print("Wrong Modality")
+		rospy.logdebug("The integer received doesn't match with any available modality")
 
 
 if __name__ == '__main__':
@@ -121,8 +126,8 @@ if __name__ == '__main__':
 	os.system('cls||clear')
 
 	# Initializing the Node
-	rospy.init_node("UI")
-
+	rospy.init_node("UI",log_level=rospy.DEBUG)
+	rospy.loginfo("UI node initialized")
 	# Initializing the working-rate the node
 	rate = rospy.Rate(5)
 
@@ -130,13 +135,14 @@ if __name__ == '__main__':
 	listener = sr.Recognizer()
 
 	# Initializing the publishers to communicate with the other nodes
-	pub1 = rospy.Publisher('/playmotion', Int32, queue_size=10)
-	pub2 = rospy.Publisher('/moving', Int32, queue_size=10)
-	pub3 = rospy.Publisher('/arm_moving', Int32, queue_size=10)
+	playmotion_pub = rospy.Publisher('/playmotion', Int32, queue_size=10)
+	rospy.logdebug("Publisher of %s topic created", '/playmotion')
+	moving_pub = rospy.Publisher('/moving', Int32, queue_size=10)
+	rospy.logdebug("Publisher of %s topic created", '/moving')
+	arm_moving = rospy.Publisher('/arm_moving', Int32, queue_size=10)
+	rospy.logdebug("Publisher of %s topic created", '/arm_moving')
 	
 	while not rospy.is_shutdown():
-		
-		print ("inside if")
 		run_tiago()
 		rate.sleep()
 	

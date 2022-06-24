@@ -46,7 +46,7 @@ void array_sum(double j_add[][7],int rows, int cols,bool add){
     Returns:
      * None
     */
-    cout<< "Current joints position: "<<endl;
+    ROS_INFO("Current joints position: ");
     for (int i=0;i<rows;i++)
     {
        for (int j=0;j<cols;j++)
@@ -55,7 +55,8 @@ void array_sum(double j_add[][7],int rows, int cols,bool add){
           current_joint_pos[i][j]=current_joint_pos[i][j]+j_add[i][j];
         else
           current_joint_pos[i][j]=current_joint_pos[i][j]-j_add[i][j];
-        cout<<current_joint_pos[i][j]<<endl;
+        
+        ROS_INFO("%f",current_joint_pos[i][j]);
         
         } 
     }
@@ -73,22 +74,23 @@ void createArmClient(arm_control_client_Ptr& actionClient){
   Returns:
     * None
   */
-  ROS_INFO("Creating action client to arm controller ...");
+  ROS_DEBUG("Creating action client to arm controller ...");
 
   actionClient.reset( new arm_control_client("/arm_controller/follow_joint_trajectory") );
 
   int iterations = 0, max_iterations = 3;
-  cout<<"START WAITING"<<endl;
+
   // Wait for arm controller action server to come up
   while( !actionClient->waitForServer(ros::Duration(2.0)) && ros::ok() && iterations < max_iterations )
   {
     ROS_DEBUG("Waiting for the arm_controller_action server to come up");
     ++iterations;
   }
-  cout<<"STOP WAITING"<<endl;
 
   if ( iterations == max_iterations )
-    throw std::runtime_error("Error in createArmClient: arm controller action server not available");
+
+    ROS_FATAL("Error in createArmClient: arm controller action server not available");
+    // throw std::runtime_error("Error in createArmClient: arm controller action server not available");
 }
 
 
@@ -106,8 +108,8 @@ void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpo
   
  int n_waypoints=sizeof(jpos)/sizeof(jpos[0])+1;
  int n_joints=sizeof(jpos[0])/sizeof(jpos[0][0]);
- cout<<"wp: "<<n_waypoints<<endl;
- cout<<"joints: "<<n_joints<<endl;
+ ROS_INFO("wp: %d",n_waypoints);
+ ROS_INFO("joints: %d", n_joints);
 
   // The joint names, which apply to all waypoints
   for(int i=0; i < n_joints ; i++){
@@ -128,7 +130,7 @@ for(int j=0;j<n_waypoints;j++)
     for(int i=0;i<n_joints;i++)
     {
       goal.trajectory.points[j].positions[i] = jpos[j][i];
-      cout<<"joint"<<i<<": "<<goal.trajectory.points[j].positions[i]<<endl;
+      ROS_INFO("joint %d: %f",i, goal.trajectory.points[j].positions[i]);
       for (int k = 0; k < 7; ++k)
       {
         if(j==(n_waypoints-1))
@@ -139,8 +141,6 @@ for(int j=0;j<n_waypoints;j++)
       }
 
     }
-
-  cout<<endl;
   //each waypoint should be reached within 2 seconds
   goal.trajectory.points[j].time_from_start = ros::Duration(duration);
   duration=duration+2.0;
@@ -164,8 +164,8 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
   Returns:
     * None
   */
-  
-  cout<<"msg data: "<<msg->data<<endl;
+
+  ROS_INFO("msg data: %d", msg->data);
   control_msgs::FollowJointTrajectoryGoal arm_goal;
   // Generates the goal for the TIAGo's arm
   if (msg->data == 1){ // increase SHOULDER position
@@ -176,7 +176,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
         waypoints_arm_goal(arm_goal,current_joint_pos);
     }
         else
-          cout<<"+ SHOULDER NOT ALLOWED"<<endl;
+          ROS_WARN("+ SHOULDER NOT ALLOWED");
     }
     if (msg->data == 2){ // decrease SHOULDER position
         //check if the joint is already at its limits
@@ -186,7 +186,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
           waypoints_arm_goal(arm_goal,current_joint_pos);
         }
       else
-          cout<<"- SHOULDER NOT ALLOWED"<<endl;
+          ROS_WARN("- SHOULDER NOT ALLOWED");
     }
     if (msg->data == 3){ // + ELBOW
         //check if the joint is already at its limits
@@ -196,10 +196,10 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
           waypoints_arm_goal(arm_goal,current_joint_pos);
         }
         else
-          cout<<"+ ELBOW NOT ALLOWED"<<endl;
+          ROS_WARN("+ ELBOW NOT ALLOWED");
     }
 
-    if (msg->data == 3){ // -ELBOW
+    if (msg->data == 4){ // -ELBOW
         //check if the joint is already at its limits
         if(current_joint_pos[0][3]> - DELTA_ELBOW){
         //add the increment to the current configuration 
@@ -207,7 +207,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
           waypoints_arm_goal(arm_goal,current_joint_pos);
         }
         else
-          cout<<"- ELBOW NOT ALLOWED"<<endl;
+          ROS_WARN("- ELBOW NOT ALLOWED");
     }
 
 
@@ -216,7 +216,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
   arm_goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
   // Sends the goal
   ArmClient->sendGoal(arm_goal);
-  cout<<"goal sent!"<<endl;
+  ROS_DEBUG("arm_goal goal sent!");
   // Wait for trajectory execution
   while(!(ArmClient->getState().isDone()) && ros::ok())
   {
@@ -229,7 +229,7 @@ int main(int argc, char** argv)
   // Init the ROS node
   ros::init(argc, argv, "arm_traj_control");
 
-  ROS_INFO("Starting arm_traj_control application ...");
+  ROS_INFO("Initializing arm_traj_control node ...");
   
   ros::NodeHandle nh;
   if (!ros::Time::waitForValid(ros::WallDuration(10.0))) // NOTE: Important when using simulated clock
@@ -239,8 +239,10 @@ int main(int argc, char** argv)
   }
 
   // Creates the client for TIAGO's arm motion
+  ROS_DEBUG("Initializing ArmClient client ...");
   createArmClient(ArmClient);
 
+  ROS_DEBUG("Subscribing to /arm_moving topic through the motionCallback function ...");
   // Subscription to /arm_moving topic (needed to receive the type of motion to be performed from UI node)
   ros::Subscriber sub = nh.subscribe("/arm_moving",1000, motionCallback);
 

@@ -25,7 +25,7 @@ def server_callback(req):
 
 	'''
 
-	print('detected: ', req.word)
+	rospy.loginfo('detected: %s', req.word)
 
 	# The function word of the vocal.py script will call another function of the script
 	# corresponding to the given command which will set the mode and kind variables to 
@@ -49,7 +49,7 @@ def word_server():
 	rospy.init_node('detect_word', log_level=rospy.DEBUG)
 	rospy.loginfo("Node %s initialized", 'detect_word')
 
-	rospy.loginfo("%s service, initializing server", 'text')
+	rospy.logdebug("%s service, initializing server", 'text')
 	s = rospy.Service('text', Word, server_callback)
 	rospy.spin()
 
