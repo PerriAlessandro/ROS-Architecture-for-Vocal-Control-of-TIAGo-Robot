@@ -135,8 +135,8 @@ if __name__ == '__main__':
 	listener = sr.Recognizer()
 
 	# Initializing the publishers to communicate with the other nodes
-	playmotion_pub = rospy.Publisher('/playmotion', Int32, queue_size=10)
-	rospy.logdebug("Publisher of %s topic created", '/playmotion')
+	playmotion_pub = rospy.Publisher('/anim', Int32, queue_size=10)
+	rospy.logdebug("Publisher of %s topic created", '/anim')
 	moving_pub = rospy.Publisher('/moving', Int32, queue_size=10)
 	rospy.logdebug("Publisher of %s topic created", '/moving')
 	arm_moving = rospy.Publisher('/arm_moving', Int32, queue_size=10)

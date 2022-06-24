@@ -128,9 +128,9 @@ def main():
     rospy.init_node("animation_node",log_level=rospy.DEBUG)
     rospy.loginfo("Node %s initialized",'animation_node')
     rate = rospy.Rate(5)
-    #subscription to /playmotion topic which sends the related integer anytime the user gives a vocal command
-    sub = rospy.Subscriber('/playmotion', Int32, play_callback)
-    rospy.logdebug("Subscription to the topic %s", '/playmotion')
+    #subscription to /anim topic which sends the related integer anytime the user gives a vocal command
+    sub = rospy.Subscriber('/anim', Int32, play_callback)
+    rospy.logdebug("Subscription to the topic %s", '/anim')
     while not rospy.is_shutdown():
         rate.sleep()	
 
