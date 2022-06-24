@@ -49,7 +49,7 @@ def callback_feedback(feedback):
 
         # Canceling any goal running
         client.cancel_all_goals()
-
+        rospy.loginfo("Goals Cancelled")
         # Resetting the variable to False
         stop_motion=False
 
@@ -92,6 +92,7 @@ def callback_laser(laser):
         if(can_go_right != prev_can_go_right):
             print("MOTION RIGHT STOPPED")
             client.cancel_all_goals()
+            rospy.loginfo("Goal Cancelled")
         
 
     else:
@@ -102,6 +103,7 @@ def callback_laser(laser):
         if(can_go_left != prev_can_go_left):
             print("MOTION LEFT STOPPED")
             client.cancel_all_goals()
+            rospy.loginfo("Goal Cancelled")
         
     else:
         can_go_left =True
@@ -111,6 +113,7 @@ def callback_laser(laser):
         if(can_go_straight != prev_can_go_straight):
             print("MOTION STRAIGHT STOPPED")
             client.cancel_all_goals()
+            rospy.loginfo("Goal Cancelled")
         
     else:
         can_go_straight =True
@@ -143,6 +146,7 @@ def motion_callback(msg):
     global goal
 
     # Waiting for server to be ready
+    rospy.loginfo("Waiting for client")
     client.wait_for_server()
 
     # If the message retrived is equal to a certain number identified in this state 
@@ -154,6 +158,7 @@ def motion_callback(msg):
         goal.turn = 0
         goal.time = 10
         client.send_goal(goal,None,None,callback_feedback)
+        rospy.loginfo(" Straight goal sent")
 
     if msg.data == 9 :
         print("GO BACKWARDS")
@@ -161,6 +166,7 @@ def motion_callback(msg):
         goal.turn = 0
         goal.time = 10
         client.send_goal(goal,None,None,callback_feedback)
+        rospy.loginfo(" Backwards goal sent")
 
     if msg.data == 2 and can_go_left:
         print("TURN LEFT")
@@ -168,12 +174,14 @@ def motion_callback(msg):
         goal.turn = 0.785
         goal.time = 2
         client.send_goal(goal,None,None,callback_feedback)
+        rospy.loginfo(" Left goal sent")
     if msg.data == 3 and can_go_right:
         print("TURN RIGHT")
         goal.velocity = 0
         goal.turn = -0.785
         goal.time = 2
         client.send_goal(goal,None,None,callback_feedback)
+        rospy.loginfo(" Right goal sent")
 
     if msg.data == 4 and can_go_right and can_go_straight:
         print("GO STRAIGHT-RIGHT")
@@ -181,6 +189,7 @@ def motion_callback(msg):
         goal.turn = -0.785
         goal.time = 2
         client.send_goal(goal,None,None,callback_feedback)
+        rospy.loginfo(" Straight-right goal sent")
 
     if msg.data == 5 and can_go_left and can_go_straight:
         print("GO STRAIGHT-LEFT")
@@ -188,41 +197,49 @@ def motion_callback(msg):
         goal.turn = +0.785
         goal.time = 2
         client.send_goal(goal,None,None,callback_feedback)
+        rospy.loginfo(" Straight-left goal sent")
 
     # The following numbers are related to the encreasing decreasing and resetting
     # of the robot's linear velocity.
     if msg.data == 6:
         vel=vel+vel_adder
         print("INCREASE VELOCITY: "+str(vel))
+        rospy.loginfo("Increased velocity")
     if msg.data == 7:
         if (vel-vel_adder)>0:
             vel=vel-vel_adder
             print("DECREASE VELOCITY: "+str(vel))
+            rospy.loginfo("Decreased velocity")
         else:
             print("Cannot decrease more!")
     if msg.data == 8:
         vel=1.0
         print("RESET VELOCITY: "+str(vel))
+        rospy.loginfo("Reset velocity")
 
     # If the stop command is called this if statement will stop any active motion
     # by cancelling the goal.
     if msg.data == -1:
         stop_motion=True
-        print("STOP MOTION")
+        rospy.loginfo("Stop velocity")
 
 
 if __name__ == '__main__':
 
     # Init of the node
-    rospy.init_node('move_speech_client')
+    rospy.init_node('move_speech_client', log_level=rospy.DEBUG)
+    rospy.loginfo("Node %s initialized", 'move_speech_client')
 
     # Definition of the client 
+    rospy.loginfo("%s service, initializing server", 'move_spc')
     client = actionlib.SimpleActionClient('move_spc', MoveSpeechAction)
 
     # Subscription to the /moving topic with the motion_callback function
+    rospy.loginfo("Subscription to the %s custom topic with the motion_callback function", 'moving')
     sub1 = rospy.Subscriber('/moving', Int32, motion_callback)
 
     # Subscription to the /scan_raw topic with the callback_laser
+    rospy.loginfo("Subscription to the %s topic with the callback_laser function", 'scan_raw')
     sub2 = rospy.Subscriber('/scan_raw', LaserScan, callback_laser)
 
     rospy.spin()

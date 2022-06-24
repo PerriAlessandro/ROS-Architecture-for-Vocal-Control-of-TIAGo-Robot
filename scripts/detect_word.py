@@ -46,7 +46,10 @@ def word_server():
 
 	'''
 
-	rospy.init_node('detect_word')
+	rospy.init_node('detect_word', log_level=rospy.DEBUG)
+	rospy.loginfo("Node %s initialized", 'detect_word')
+
+	rospy.loginfo("%s service, initializing server", 'text')
 	s = rospy.Service('text', Word, server_callback)
 	rospy.spin()
 

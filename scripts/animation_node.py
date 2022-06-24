@@ -92,42 +92,48 @@ def play_callback(msg):
     Returns:
      * None
 	'''
-	
+
+	motion=''
 	if msg.data == 1:
-		start_action('wave')
+		motion='wave'
 	if msg.data == 2:
-		start_action('unfold_arm')
+		motion='unfold_arm'
 	if msg.data == 3:
-		start_action('reach_max')
+		motion='reach_max'
 	if msg.data == 4:
-		start_action('reach_floor')
+		motion='reach_floor'
 	if msg.data == 5:
-		start_action('shake_hands')
+		motion='shake_hands'
 	if msg.data == 6:
-		start_action('offer')
+		motion='offer'
 	if msg.data == 7:
-		start_action('inspect_surroundings')
+		motion='inspect_surroundings'
 	if msg.data == 8:
-		start_action('head_tour')
+		motion='head_tour'
 	if msg.data == 9:
-		start_action('close')
+		motion='close'
 	if msg.data == 10:
-		start_action('close_half')
+		motion='close_half'
 	if msg.data == 11:
-		start_action('do_weights')
+		motion='do_weights'
 	if msg.data == 12:
-		start_action('home')
+		motion='home'
+
+	
+	if (motion!=''):
+		start_action(motion)
+		rospy.loginfo("Callback for %s topic: received %s, corresponding action %s",'/playmotion',str(msg.data),motion)
 
 		
 def main():
-	rospy.init_node("animation_node")
-
-	rate = rospy.Rate(5)
-	#subscription to /playmotion topic which sends the related integer anytime the user gives a vocal command
-	sub = rospy.Subscriber('/playmotion', Int32, play_callback)
-
-	while not rospy.is_shutdown():
-		rate.sleep()	
+    rospy.init_node("animation_node")
+    rospy.loginfo("Node %s initialized",'animation_node')
+    rate = rospy.Rate(5)
+    #subscription to /playmotion topic which sends the related integer anytime the user gives a vocal command
+    sub = rospy.Subscriber('/playmotion', Int32, play_callback)
+    rospy.loginfo("Subscription to the topic %s", '/playmotion')
+    while not rospy.is_shutdown():
+        rate.sleep()	
 
 if __name__ == '__main__':
 	main()
