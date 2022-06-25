@@ -30,9 +30,9 @@ def server_callback(req):
 	# The function word of the vocal.py script will call another function of the script
 	# corresponding to the given command which will set the mode and kind variables to 
 	# the correct int values corresponding to the required action.
-	mode,kind=vocal.word(req.word)
+	mode,kind,name,info=vocal.word(req.word)
 
-	return WordResponse(mode,kind)
+	return WordResponse(mode,kind,name,info)
 
 def word_server():
 	'''

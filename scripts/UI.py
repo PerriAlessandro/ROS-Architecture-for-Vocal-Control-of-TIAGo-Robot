@@ -8,16 +8,19 @@ import rospy
 import os
 from std_msgs.msg import Int32
 from speech_rec.srv import Word , WordRequest
+import GUI
+from GUI import bcolors as bc
+firstTime=True
 
 def word_client(word):
 
 	'''
 	Function to create the client for the custom ROS-Action "Word" available 
-	in the "action" folder, in order to send the request to the server and get 
+	in the "srv" folder, in order to send the request to the server and get 
 	its response.
 
 	Arguments:
-		* word: Word linstened by the microphone sent to the server to be elaborated.
+		* word: Word listened by the microphone sent to the server to be elaborated.
 	Returns:
 		* result: the server response.
 
@@ -54,23 +57,29 @@ def take_command():
     Returns:
        * command: the whole vocal input as a string 
     '''
-
+    global firstTime
     try:
         # Using the Computer microphone a input source 
         with sr.Microphone() as source:
-            print('listening...')
+            if firstTime:
+                os.system('cls||clear')
+                print(GUI.title)
+                print(GUI.instruction)
+                print(GUI.endline)
+                firstTime=False
+            print(bc.BOLD+bc.CYAN+'--> Listening...'+bc.END)
             # Adjusting the external ambient noise 
             listener.adjust_for_ambient_noise(source)
             # Listening from the source 
             audio = listener.listen(source)
             # Using Google API to recognize the vocal input 
             command = listener.recognize_google(audio, language="en-EN")
-            print("Ok! I'm processing the message!")
-            rospy.loginfo("Ok! I'm processing the message!")
+            print(bc.BOLD+bc.YELLOW+"    Ok! I'm processing the message, please wait.."+bc.END)
+            #rospy.loginfo("Ok! I'm processing the message!")
             # retrieving the in input in lower case string 
             command = command.lower()
-            print("You said: \n", command)
-            rospy.loginfo("User said: %s", command)
+            print(bc.BOLD+"    You said: "+bc.END, command)
+            #rospy.loginfo("User said: %s", command)
             # returning the vocal command only if the key-word is in the string line
             # vocal input 
             if 'alexa' in command:
@@ -80,8 +89,9 @@ def take_command():
     except Exception as e:
         # printing the exceptions if any
         print(e)
-        rospy.logerr("Exception occurred: %s", str(e))
-    return "I didn't get it"
+        #rospy.logerr("Exception occurred: %s", str(e))
+	
+    return ""
 
 def run_tiago():
 
@@ -97,37 +107,40 @@ def run_tiago():
 
 	# retrieving the vocal command
 	command = take_command()
-	print(command)
-	rospy.loginfo("Vocal command detected: %s", command)
+	rospy.logdebug("    Vocal command detected: %s", command)
+
 
 	# getting the server response
-	x = word_client(command)
-	rospy.loginfo("Modality: %d, kind of motion: %d" % (x.mode,x.kind))
-
+	result = word_client(command)
+	rospy.logdebug("Modality: %d, kind of motion: %d, name: %s, info: %s" % (result.mode,result.kind,result.name,result.info))
+	if (result.name != ''):
+		print((bc.BOLD+"    Detected command: %s, info: %s"+bc.END) % (bc.GREEN+result.name+bc.END,result.info))
+	else:
+		print(bc.BOLD+bc.RED+"    No command detected, please retry..\n"+bc.END)
 	# Sending a message to the proper node
-	if x.mode == 1:
-		msg = x.kind
+	if result.mode == 1:
+		msg = result.kind
 		playmotion_pub.publish(msg)
 		rospy.logdebug("Message published on %s topic", '/playmotion')
-	elif x.mode == 2:
-		msg = x.kind
+	elif result.mode == 2:
+		msg = result.kind
 		moving_pub.publish(msg)
 		rospy.logdebug("Message published on %s topic", '/moving')
-	elif x.mode == 3:
-		msg = x.kind
+	elif result.mode == 3:
+		msg = result.kind
 		arm_moving.publish(msg)
 		rospy.logdebug("Message published on %s topic", '/arm_moving')
 	else:
 		rospy.logdebug("The integer received doesn't match with any available modality")
 
 
+
+
 if __name__ == '__main__':
 
-	os.system('cls||clear')
-
 	# Initializing the Node
-	rospy.init_node("UI",log_level=rospy.DEBUG)
-	rospy.loginfo("UI node initialized")
+	rospy.init_node("UI")
+	#rospy.loginfo("UI node initialized")
 	# Initializing the working-rate the node
 	rate = rospy.Rate(5)
 
