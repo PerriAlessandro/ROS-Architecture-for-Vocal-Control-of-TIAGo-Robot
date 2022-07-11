@@ -171,7 +171,7 @@ def backward(word):
     kind = 9
     name = 'backward'
     info = 'goes backwards'
-    return mode, kind
+    return mode, kind,name,info
 
 def stop(word):
     print('STOP')
