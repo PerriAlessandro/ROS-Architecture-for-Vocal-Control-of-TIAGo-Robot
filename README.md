@@ -76,5 +76,6 @@ The *Action-server* Node will publish as a `Twist` message the linear and angula
 
 __Architecture's UML graph__
 ----------------------
-![UML_SOFAR](https://user-images.githubusercontent.com/91262561/178113886-e9cc1c60-a8fc-42c3-a434-af929e569ccc.png)
+![UML SOFAR](https://user-images.githubusercontent.com/91262561/178252817-a2c846bf-97cb-4a2b-afbb-1bdc70939368.png)
+
 
