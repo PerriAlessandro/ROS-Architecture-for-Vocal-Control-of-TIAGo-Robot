@@ -76,7 +76,7 @@ void createArmClient(arm_control_client_Ptr& actionClient){
   */
   ROS_DEBUG("Creating action client to arm controller ...");
 
-  actionClient.reset( new arm_control_client("/arm_controller/follow_joint_trajectory") );
+  actionClient.reset( new arm_control_client("/arm_left_controller/follow_joint_trajectory") );
 
   int iterations = 0, max_iterations = 3;
 
@@ -113,8 +113,20 @@ void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpo
 
   // The joint names, which apply to all waypoints
   for(int i=0; i < n_joints ; i++){
-    goal.trajectory.joint_names.push_back("arm_"+to_string(i+1)+"_joint");
+    goal.trajectory.joint_names.push_back("arm_left_"+to_string(i+1)+"_joint");
   }
+
+/*
+  goal.trajectory.joint_names.push_back("arm_left_1_joint");
+  goal.trajectory.joint_names.push_back("arm_left_2_joint");
+  goal.trajectory.joint_names.push_back("arm_left_3_joint");
+  goal.trajectory.joint_names.push_back("arm_left_4_joint");
+  goal.trajectory.joint_names.push_back("arm_left_5_joint");
+  goal.trajectory.joint_names.push_back("arm_left_6_joint");
+  goal.trajectory.joint_names.push_back("arm_left_7_joint");
+*/
+
+
 
 // resizing so that each row corresponds to a waypoint in this goal trajectory
 goal.trajectory.points.resize(n_waypoints);

@@ -41,7 +41,7 @@ title = R"""
 """+bcolors.END +bcolors.BOLD    
 
 instruction = R"""
-   Here is a list with the main possible voice commands, just say "Alexa" and the desired command:
+   Here is a list with the main possible voice commands, just say "Tiago" and the desired command:
 
    """ + bcolors.BOLD +bcolors.BLUE +  """ Base movements """ + bcolors.END + """                         """ + bcolors.BOLD +bcolors.BLUE +  """                         PlayMotions """ + bcolors.END + """                
 

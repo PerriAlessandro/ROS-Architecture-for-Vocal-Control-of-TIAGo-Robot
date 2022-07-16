@@ -82,10 +82,17 @@ def take_command():
             #rospy.loginfo("User said: %s", command)
             # returning the vocal command only if the key-word is in the string line
             # vocal input 
-            if 'alexa' in command:
-                # erasing the key-word from the string 
-                command = command.replace('alexa', '')
+
+            # erasing the key-word from the string
+            if 'tiago' in command:
+                command = command.replace('tiago', '')
                 return command
+            elif 'thiago' in command:
+                command = command.replace('thiago', '')
+                return command
+            elif 'jago' in command:
+                command = command.replace('jago', '')
+                return command			
     except Exception as e:
         # printing the exceptions if any
         print(e)
