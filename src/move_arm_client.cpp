@@ -20,20 +20,22 @@ typedef actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>
 typedef boost::shared_ptr< arm_control_client>  arm_control_client_Ptr;
 
 // Create an arm controller action client to move the TIAGo's arm
-arm_control_client_Ptr ArmClient;
+arm_control_client_Ptr ArmClient_left;
+arm_control_client_Ptr ArmClient_right;
 
 //constant value representing the increment of a certain joint
 const double DELTA_SHOULDER=0.8;
 const double DELTA_ELBOW=0.8;
 //array containing the current joint position
-double current_joint_pos[1][7] ={0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+double left_current_joint_pos[1][7] ={0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+double right_current_joint_pos[1][7] ={0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 //elementary steps to be added to the current joint configuration
 double delta_q_shoulder[1][7] = {0.0,DELTA_SHOULDER,0.0,0.0,0.0,0.0,0.0};
 double delta_q_elbow[1][7] = {0.0,0.0,0.0,DELTA_ELBOW,0.0,0.0,0.0};
 
 
 
-void array_sum(double j_add[][7],int rows, int cols,bool add){
+void array_sum(double j_add[][7],int rows, int cols,bool add, bool arm){
     /*
     Function to make the scalar sum between "j_add" array and the one representing the current joint configuration
 
@@ -42,6 +44,7 @@ void array_sum(double j_add[][7],int rows, int cols,bool add){
      * rows: number of rows
      * cols: number of columns
      * add:  if true, returns the sum. If false, returns the difference
+     * arm: false for left arm, true for right arm
     
     Returns:
      * None
@@ -51,12 +54,25 @@ void array_sum(double j_add[][7],int rows, int cols,bool add){
     {
        for (int j=0;j<cols;j++)
         {
-        if(add)
-          current_joint_pos[i][j]=current_joint_pos[i][j]+j_add[i][j];
-        else
-          current_joint_pos[i][j]=current_joint_pos[i][j]-j_add[i][j];
-        
-        ROS_INFO("%f",current_joint_pos[i][j]);
+        if(add){
+          if (arm){
+          	right_current_joint_pos[i][j]=right_current_joint_pos[i][j]+j_add[i][j];
+		ROS_INFO("%f",right_current_joint_pos[i][j]);}
+	  else {
+	        left_current_joint_pos[i][j]=left_current_joint_pos[i][j]+j_add[i][j];
+	        ROS_INFO("%f",left_current_joint_pos[i][j]);}
+          }
+        else{
+
+          if (arm){
+          	right_current_joint_pos[i][j]=right_current_joint_pos[i][j]-j_add[i][j];
+	        ROS_INFO("%f",right_current_joint_pos[i][j]);}
+	  else {
+	        left_current_joint_pos[i][j]=left_current_joint_pos[i][j]-j_add[i][j];
+                ROS_INFO("%f",left_current_joint_pos[i][j]);}
+
+	}
+
         
         } 
     }
@@ -64,7 +80,7 @@ void array_sum(double j_add[][7],int rows, int cols,bool add){
 
 
 
-void createArmClient(arm_control_client_Ptr& actionClient){
+void createArmClient(arm_control_client_Ptr& actionClient, const std::string arm_controller_name){
   /*
   Function to create a ROS action client to move TIAGos arm
 
@@ -75,8 +91,9 @@ void createArmClient(arm_control_client_Ptr& actionClient){
     * None
   */
   ROS_DEBUG("Creating action client to arm controller ...");
+  std::string action_client_name = "/" + arm_controller_name + "/follow_joint_trajectory";
 
-  actionClient.reset( new arm_control_client("/arm_left_controller/follow_joint_trajectory") );
+  actionClient.reset( new arm_control_client(action_client_name) );
 
   int iterations = 0, max_iterations = 3;
 
@@ -94,7 +111,7 @@ void createArmClient(arm_control_client_Ptr& actionClient){
 }
 
 
-void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpos [][7]){
+void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpos [][7], const std::string arm_controller_name){
   /*
   Function to generate a trajectory with a given number of waypoints to move TIAGos arm 
 
@@ -113,18 +130,9 @@ void waypoints_arm_goal(control_msgs::FollowJointTrajectoryGoal& goal,double jpo
 
   // The joint names, which apply to all waypoints
   for(int i=0; i < n_joints ; i++){
-    goal.trajectory.joint_names.push_back("arm_left_"+to_string(i+1)+"_joint");
+    goal.trajectory.joint_names.push_back("arm_"+arm_controller_name +"_"+to_string(i+1)+"_joint");
   }
 
-/*
-  goal.trajectory.joint_names.push_back("arm_left_1_joint");
-  goal.trajectory.joint_names.push_back("arm_left_2_joint");
-  goal.trajectory.joint_names.push_back("arm_left_3_joint");
-  goal.trajectory.joint_names.push_back("arm_left_4_joint");
-  goal.trajectory.joint_names.push_back("arm_left_5_joint");
-  goal.trajectory.joint_names.push_back("arm_left_6_joint");
-  goal.trajectory.joint_names.push_back("arm_left_7_joint");
-*/
 
 
 
@@ -180,60 +188,111 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
   ROS_INFO("msg data: %d", msg->data);
   control_msgs::FollowJointTrajectoryGoal arm_goal;
   // Generates the goal for the TIAGo's arm
-  if (msg->data == 1){ // increase SHOULDER position
+  if (msg->data == 1){ // increase SHOULDER position (LEFT)
     //check if the joint is already at its limits
-    if(current_joint_pos[0][1]<DELTA_SHOULDER){
+    if(left_current_joint_pos[0][1]<DELTA_SHOULDER){
         //add the increment to the current configuration 
-        array_sum(delta_q_shoulder,1,7,true);
-        waypoints_arm_goal(arm_goal,current_joint_pos);
+        array_sum(delta_q_shoulder,1,7,true,false);
+        waypoints_arm_goal(arm_goal,left_current_joint_pos, "left");
     }
         else
-          ROS_WARN("+ SHOULDER NOT ALLOWED");
+          ROS_WARN("+ SHOULDER NOT ALLOWED (LEFT)");
     }
-    if (msg->data == 2){ // decrease SHOULDER position
+    if (msg->data == 2){ // decrease SHOULDER position (LEFT)
         //check if the joint is already at its limits
-        if(current_joint_pos[0][1]>-DELTA_SHOULDER){
+        if(left_current_joint_pos[0][1]>-DELTA_SHOULDER){
         //add the increment to the current configuration 
-          array_sum(delta_q_shoulder,1,7,false);
-          waypoints_arm_goal(arm_goal,current_joint_pos);
+          array_sum(delta_q_shoulder,1,7,false,false);
+          waypoints_arm_goal(arm_goal,left_current_joint_pos,"left");
         }
       else
-          ROS_WARN("- SHOULDER NOT ALLOWED");
+          ROS_WARN("- SHOULDER NOT ALLOWED (LEFT)");
     }
-    if (msg->data == 3){ // + ELBOW
+    if (msg->data == 3){ // + ELBOW (LEFT)
         //check if the joint is already at its limits
-        if(current_joint_pos[0][3]<DELTA_ELBOW){
+        if(left_current_joint_pos[0][3]<DELTA_ELBOW){
         //add the increment to the current configuration 
-          array_sum(delta_q_elbow,1,7,true);
-          waypoints_arm_goal(arm_goal,current_joint_pos);
+          array_sum(delta_q_elbow,1,7,true,false);
+          waypoints_arm_goal(arm_goal,left_current_joint_pos,"left");
         }
         else
-          ROS_WARN("+ ELBOW NOT ALLOWED");
+          ROS_WARN("+ ELBOW NOT ALLOWED (LEFT)");
     }
 
-    if (msg->data == 4){ // -ELBOW
+    if (msg->data == 4){ // -ELBOW (LEFT)
         //check if the joint is already at its limits
-        if(current_joint_pos[0][3]> - DELTA_ELBOW){
+        if(left_current_joint_pos[0][3]> - DELTA_ELBOW){
         //add the increment to the current configuration 
-          array_sum(delta_q_elbow,1,7,false);
-          waypoints_arm_goal(arm_goal,current_joint_pos);
+          array_sum(delta_q_elbow,1,7,false,false);
+          waypoints_arm_goal(arm_goal,left_current_joint_pos,"left");
         }
         else
-          ROS_WARN("- ELBOW NOT ALLOWED");
+          ROS_WARN("- ELBOW NOT ALLOWED (LEFT)");
     }
 
+  if (msg->data == 5){ // increase SHOULDER position (RIGHT)
+    //check if the joint is already at its limits
+    if(right_current_joint_pos[0][1]<DELTA_SHOULDER){
+        //add the increment to the current configuration 
+        array_sum(delta_q_shoulder,1,7,true,true);
+        waypoints_arm_goal(arm_goal,right_current_joint_pos,"right");
+    }
+        else
+          ROS_WARN("+ SHOULDER NOT ALLOWED (RIGHT)");
+    }
 
+    if (msg->data == 6){ // decrease SHOULDER position (RIGHT)
+        //check if the joint is already at its limits
+        if(right_current_joint_pos[0][1]>-DELTA_SHOULDER){
+        //add the increment to the current configuration 
+          array_sum(delta_q_shoulder,1,7,false,true);
+          waypoints_arm_goal(arm_goal,right_current_joint_pos,"right");
+        }
+      else
+          ROS_WARN("- SHOULDER NOT ALLOWED (RIGHT)");
+    }
+    if (msg->data == 7){ // + ELBOW (RIGHT)
+        //check if the joint is already at its limits
+        if(right_current_joint_pos[0][3]<DELTA_ELBOW){
+        //add the increment to the current configuration 
+          array_sum(delta_q_elbow,1,7,true,true);
+          waypoints_arm_goal(arm_goal,right_current_joint_pos,"right");
+        }
+        else
+          ROS_WARN("+ ELBOW NOT ALLOWED (RIGHT)");
+    }
+
+    if (msg->data == 8){ // -ELBOW (RIGHT)
+        //check if the joint is already at its limits
+        if(right_current_joint_pos[0][3]> - DELTA_ELBOW){
+        //add the increment to the current configuration 
+          array_sum(delta_q_elbow,1,7,false,true);
+          waypoints_arm_goal(arm_goal,right_current_joint_pos,"right");
+        }
+        else
+          ROS_WARN("- ELBOW NOT ALLOWED (RIGHT)");
+    }
 
   // Sends the command to start the given trajectory 1s from now
   arm_goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
   // Sends the goal
-  ArmClient->sendGoal(arm_goal);
-  ROS_DEBUG("arm_goal goal sent!");
+if (msg->data > 0 and msg->data < 5){
+  ArmClient_left->sendGoal(arm_goal);
+  ROS_DEBUG("LEFT: arm_goal goal sent!");
   // Wait for trajectory execution
-  while(!(ArmClient->getState().isDone()) && ros::ok())
+  while(!(ArmClient_left->getState().isDone()) && ros::ok())
+  {
+    ros::Duration(4).sleep(); // sleep for four seconds
+  }}
+else {
+  ArmClient_right->sendGoal(arm_goal);
+  ROS_DEBUG("RIGHT: arm_goal goal sent!");
+  // Wait for trajectory execution
+  while(!(ArmClient_right->getState().isDone()) && ros::ok())
   {
     ros::Duration(4).sleep(); // sleep for four seconds
   }
+}
 }
 
 int main(int argc, char** argv)
@@ -252,7 +311,8 @@ int main(int argc, char** argv)
 
   // Creates the client for TIAGO's arm motion
   ROS_DEBUG("Initializing ArmClient client ...");
-  createArmClient(ArmClient);
+  createArmClient(ArmClient_left,"arm_left_controller");
+  createArmClient(ArmClient_right,"arm_right_controller");
 
   ROS_DEBUG("Subscribing to /arm_moving topic through the motionCallback function ...");
   // Subscription to /arm_moving topic (needed to receive the type of motion to be performed from UI node)

@@ -187,13 +187,23 @@ def arm(word):
 
     mode=3
     if 'up' in word:
+        if 'right' in word:
+            kind = 5
+            name = 'arm right up'
+            info = 'increases the shoulder joint of right arm'
+        else:
             kind = 1
-            name = 'arm up'
-            info = 'increases the shoulder joint'
+            name = 'arm left up'
+            info = 'increases the shoulder joint of left arm'            
     elif 'down' in word:
+        if 'right' in word: 
+            kind = 6
+            name = 'arm right down'
+            info = 'decreases the shoulder joint of right arm'
+        else:
             kind = 2
-            name = 'arm down'
-            info = 'decreases the shoulder joint'
+            name = 'arm left down'
+            info = 'decreases the shoulder joint of left arm'            
     else:
         kind=-1
         name = ''
@@ -204,13 +214,23 @@ def elbow(word):
 
     mode=3
     if 'up' in word:
+        if 'right' in word:
+            kind = 7
+            name = 'elbow right up'
+            info = 'increases the elbow joint of right arm'
+        else:
             kind = 3
-            name = 'elbow up'
-            info = 'increases the elbow joint'
+            name = 'elbow left up'
+            info = 'increases the elbow joint of left arm'
     elif 'down' in word:
+        if 'right' in word:
+            kind = 8
+            name = 'elbow right up'
+            info = 'decreases the elbow joint of right arm'
+        else:
             kind = 4
-            name = 'elbow down'
-            info = 'decreases the elbow joint'
+            name = 'elbow left down'
+            info = 'decreases the elbow joint of left arm'
     else:
         kind=-1 
         name = ''
