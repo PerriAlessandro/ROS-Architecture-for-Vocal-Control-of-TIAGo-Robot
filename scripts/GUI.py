@@ -46,17 +46,15 @@ instruction = R"""
    """ + bcolors.BOLD +bcolors.BLUE +  """ Base movements """ + bcolors.END + """                         """ + bcolors.BOLD +bcolors.BLUE +  """                         PlayMotions """ + bcolors.END + """                
 
    """ + bcolors.YELLOW + """    ============================================== """ + bcolors.END + """         """+ bcolors.YELLOW + """    ===================  """ + bcolors.END +"""
-      |   Straight Right |    Go    |  Straight Left |             |  * hello        |
-      |       Right      |          |      Left      |             |  * unfold       |
-      |                  | Backward |                |             |  * maximum      |
-   """ + bcolors.YELLOW + """    ============================================== """ + bcolors.END + """             |  * floor        |                                                                                 |  * shake        |
-   """ + bcolors.BOLD +bcolors.BLUE +  """ Arm movements """ + bcolors.END + """                                                 |  * offer        |                                                                                 |  * surroundings |       
-   """ + bcolors.YELLOW + """          ================================= """ + bcolors.END + """                    |  * tour         |
-            |     Arm up     |    Elbow up    |                    |  * close        |
-            |  ------------  |  ------------  |                    |  * half         |
-            |     Arm down   |   Elbow down   |                    |  * gym          |
-   """ + bcolors.YELLOW + """          ================================= """ + bcolors.END + """                    |  * home         |
-""" + bcolors.YELLOW + """                                                                   ===================  """ + bcolors.END
+      |   Straight Right |    Go    |  Straight Left |             |  * hello         |
+      |       Right      |          |      Left      |             |  * unfold l/r/b  |
+      |                  | Backward |                |             |  * maximum l/r/b |
+   """ + bcolors.YELLOW + """    ============================================== """ + bcolors.END + """             |  * reach vertical|                                                                                |  * " horizontal  |
+   """ + bcolors.BOLD +bcolors.BLUE +  """ Arm movements (specify "left" or "right", default: left)""" + bcolors.END + """       |  * offer l/r/b   |                                                                                |  * home l/r/b    |       
+   """ + bcolors.YELLOW + """          ================================= """ + bcolors.END + """                    |  * close l/r/b   |
+            |     Arm up     |    Elbow up    |                    |    l : left      |
+            |  ------------  |  ------------  |                    |    r : right     |
+            |     Arm down   |   Elbow down   |                    |    b : both      |""" + bcolors.YELLOW + """                          ================================= """ + bcolors.END + """                    """ + bcolors.YELLOW + """===================  """ + bcolors.END
 
 endline= R"""
 """+ bcolors.GREEN +"""====================================================================================================\n"""+bcolors.END
