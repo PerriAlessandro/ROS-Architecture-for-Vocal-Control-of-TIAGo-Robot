@@ -192,7 +192,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
     //check if the joint is already at its limits
     if(left_current_joint_pos[0][1]<DELTA_SHOULDER){
         //add the increment to the current configuration 
-        array_sum(delta_q_shoulder,1,7,true,false);
+        array_sum(delta_q_shoulder,1,7,false,false);
         waypoints_arm_goal(arm_goal,left_current_joint_pos, "left");
     }
         else
@@ -202,7 +202,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
         //check if the joint is already at its limits
         if(left_current_joint_pos[0][1]>-DELTA_SHOULDER){
         //add the increment to the current configuration 
-          array_sum(delta_q_shoulder,1,7,false,false);
+          array_sum(delta_q_shoulder,1,7,true,false);
           waypoints_arm_goal(arm_goal,left_current_joint_pos,"left");
         }
       else
@@ -234,7 +234,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
     //check if the joint is already at its limits
     if(right_current_joint_pos[0][1]<DELTA_SHOULDER){
         //add the increment to the current configuration 
-        array_sum(delta_q_shoulder,1,7,true,true);
+        array_sum(delta_q_shoulder,1,7,false,true);
         waypoints_arm_goal(arm_goal,right_current_joint_pos,"right");
     }
         else
@@ -245,7 +245,7 @@ void motionCallback(const std_msgs::Int32::ConstPtr& msg)
         //check if the joint is already at its limits
         if(right_current_joint_pos[0][1]>-DELTA_SHOULDER){
         //add the increment to the current configuration 
-          array_sum(delta_q_shoulder,1,7,false,true);
+          array_sum(delta_q_shoulder,1,7,true,true);
           waypoints_arm_goal(arm_goal,right_current_joint_pos,"right");
         }
       else

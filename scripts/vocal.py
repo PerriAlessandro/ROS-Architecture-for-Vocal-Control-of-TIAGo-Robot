@@ -19,90 +19,124 @@ def hello(word):
 
 def unfold(word):
     print('unfold')
-    mode = 1
-    kind = 2
-    name = 'unfold'
-    info = 'unfolds the arm'
+    mode=1
+    if 'left' in word:
+            kind = 2
+            name = 'open left'
+            info = 'opening left arm'
+    elif 'right' in word:
+            kind = 3
+            name = 'open right'
+            info = 'opening right arm'
+    elif 'both' in word:
+            kind = 4
+            name = 'open both'
+            info = 'opening both arms'
+    else:
+        kind=-1 
+        name = ''
+        info = ''   
     return mode, kind,name,info
 
-def maximum(word):
-    print('maximum')
-    mode = 1
-    kind = 3
-    name = 'maximum'
-    info = 'reaches the maximum'
-    return mode, kind,name,info
-
-def floor(word):
-    print('floor')
-    mode = 1
-    kind = 4
-    name = 'hello'
-    info = 'reaches the floor'
-    return mode, kind,name,info
-
-def shake(word):
-    print('shake')
-    mode = 1
-    kind = 5
-    name = 'shake'
-    info = 'shake the hand'
-    return mode, kind,name,info
-
-def offer(word):
-    print('offer')
-    mode = 1
-    kind = 6
-    name = 'offer'
-    info = 'offer'
-    return mode, kind,name,info
-
-def surroundings(word):
-    print('surroundings')
-    mode = 1
-    kind = 7
-    name = 'surroundings'
-    info = 'inspect the surroundings with the head'
-    return mode, kind,name,info
-
-def tour(word):
-    print('tour')
-    mode = 1
-    kind = 8
-    name = 'tour'
-    info = 'makes a head-tour'
+def home(word):
+    print('home')
+    mode=1
+    if 'left' in word:
+            kind = 5
+            name = 'home left'
+            info = 'home left arm'
+    elif 'right' in word:
+            kind = 6
+            name = 'home right'
+            info = 'home right arm'
+    elif 'both' in word:
+            kind = 7
+            name = 'home both'
+            info = 'home both arms'
+    else:
+        kind=-1 
+        name = ''
+        info = ''   
     return mode, kind,name,info
 
 def close(word):
     print('close')
     mode = 1
-    kind = 9
-    name = 'close'
-    info = 'closes the arm'
+    if 'left' in word:
+            kind = 8
+            name = 'close left'
+            info = 'close left arm'
+    elif 'right' in word:
+            kind = 9
+            name = 'close right'
+            info = 'close right arm'
+    elif 'both' in word:
+            kind = 10
+            name = 'close both'
+            info = 'close both arms'
+    else:
+        kind=-1 
+        name = ''
+        info = ''   
     return mode, kind,name,info
 
-def half(word):
-    print('half')
+def maximum(word):
+    print('maximum')
     mode = 1
-    kind = 10
-    name = 'half'
-    info = 'semi-closes the arm'
+    if 'left' in word:
+            kind = 11
+            name = 'maximum left'
+            info = 'maximum left arm'
+    elif 'right' in word:
+            kind = 12
+            name = 'maximum right'
+            info = 'maximum right arm'
+    elif 'both' in word:
+            kind = 13
+            name = 'maximum both'
+            info = 'maximum both arms'
+    else:
+        kind=-1 
+        name = ''
+        info = ''   
     return mode, kind,name,info
 
-def gym(word):
-    print('gym')
+def reach(word):
+    print('reach')
     mode = 1
-    kind = 11
-    name = 'gym'
-    info = 'does weights with the arm'
+    if 'vertical' in word:
+            kind = 14
+            name = 'vertical reach'
+            info = 'reaching vertical position'
+    elif 'horizontal' in word:
+            kind = 15
+            name = 'horizontal reach'
+            info = 'reaching horizontal position'
+    else:
+        kind=-1 
+        name = ''
+        info = ''   
     return mode, kind,name,info
 
-def home(word):
-    print('home')
+def offer(word):
+    print('offer')
     mode = 1
-    kind = 12
-    name = 'hello'
-    info = 'returns in home configuration'
+    if 'left' in word:
+            kind = 16
+            name = 'offer left'
+            info = 'offer left arm'
+    elif 'right' in word:
+            kind = 17
+            name = 'offer right'
+            info = 'offer right arm'
+    elif 'both' in word:
+            kind = 18
+            name = 'offer both'
+            info = 'offer both arms'
+    else:
+        kind=-1 
+        name = ''
+        info = ''   
     return mode, kind,name,info
 
 #### Mode 2 ####
@@ -138,32 +172,29 @@ def reset(word):
     info = 'resets the velocity'
     return mode, kind,name,info
 
-def left(word):
-    print('left')
-    mode = 2
-    if 'straight' in word:
+def turn(word):
+    if 'left' in word:
+        mode = 2
+        if 'straight' in word:
             kind = 5
             name = 'straight left'
             info = 'goes straight-left'
-    else:
+        else:
             kind = 2
             name = 'left'
             info = 'turns left'
-    return mode, kind,name,info
-
-def right(word):
-    print('right')
-    mode = 2
-    if 'straight' in word:
+    elif 'right' in word:
+        mode = 2
+        if 'straight' in word:
             kind = 4
             name = 'straight right'
             info = 'goes straight-right'
-    else:
+        else:
             kind = 3
             name = 'right'
             info = 'turns right'
-    return mode, kind,name,info
 
+    return mode, kind,name,info
 
 def backward(word):
     print('BACKWARDS')
@@ -257,29 +288,17 @@ switcher = {
 
     'maximum': maximum,
 
-    'floor': floor,
-
-    'shake': shake,
+    'reach': reach,
 
     'offer': offer,
 
-    'surroundings': surroundings,
-
-    'tour': tour,
-
     'close': close,
-
-    'half': half,
-
-    'gym': gym,
 
     'home': home,
 
     'go': go,
 
-    'left' : left,
-
-    'right': right,
+    'turn' : turn,
 
     'backward': backward,
 
